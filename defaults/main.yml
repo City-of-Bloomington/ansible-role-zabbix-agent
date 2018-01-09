@@ -1,0 +1,3 @@
+---
+zabbix_server_hostname: zabbix.server.example
+...
