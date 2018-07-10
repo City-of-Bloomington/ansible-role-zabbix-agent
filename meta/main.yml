@@ -1,20 +1,18 @@
 ---
 galaxy_info:
-  description: Role for configuring Zabbix Agent
-
+  description: Role for adding Zabbix Agent to a linux machine
   company: City of Bloomington, Indiana
-  issue_tracker_url: https://github.com/City-of-Bloomington/ansible-role-zabbix/issues
+  issue_tracker_url: https://github.com/City-of-Bloomington/ansible-role-zabbix-agent/issues
   license: GPLv3
-  min_ansible_version: 2.0
+  min_ansible_version: 2.4
   platforms:
     - name: Ubuntu
       versions:
         - trusty
         - xenial
+        - bionic
+  role_name: zabbix-agent
   galaxy_tags:
     - ubuntu
-    - zabbix-agent
-
-dependencies:
-  - { role: City-of-Bloomington.linux  }
+    - zabbix
 ...

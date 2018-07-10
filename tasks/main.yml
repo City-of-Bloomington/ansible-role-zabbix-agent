@@ -1,34 +1,53 @@
 ---
-- name: add zabbix.com key
-  apt_key: url=http://repo.zabbix.com/zabbix-official-repo.key state=present
+  # rewrite using the following:
+  # docs.ansible.com/ansible/latest/apt_repository_module.html
+  # docs.ansible.com/ansible/latest/apt_key_module.html
 
-- name: add zabbix.com repo
-  apt_repository: repo='deb http://repo.zabbix.com/zabbix/3.4/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} main contrib non-free' state=present
-
-- name: Update apt cache
-  apt: update_cache=yes
-
-- name: Install related packages
-  apt:
-    name: "{{ item }}"
+- name: Add the public key for Zabbix's repo
+  apt_key:
+    url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
     state: present
-  with_items:
-    - zabbix-agent
+  when: ansible_distribution_version |int <18
+  
+- name: Add the repo to /etc/apt/sources.list.d
+  apt_repository:
+    repo: deb {{ zabbix_repo.url}}/{{ zabbix_repo.repo}} {{ ansible_distribution_release }} main
+    state: present
+    filename: 'zabbix'
+  when: ansible_distribution_version |int <18  
 
-- name: Copy over our modified config file
-  template:
-    src: zabbix_agentd.conf
-    dest: "/etc/zabbix/zabbix_agentd.conf"
+- name: Install agent
+  apt: 
+    name: zabbix-agent
+    state: present
+    update_cache: yes
 
-- name: Open Firewall for zabbix checks
+- name: Enable rules in UFW
   ufw:
     rule: allow
-    port: 10050:10051
-    proto: tcp
+    port: 10050
+    src: 10.20.20.0/24
+    
 
-- name: Enable agent
-  service: 
-    name: zabbix-agent.service
-    enabled: yes
-  notify: restart zabbix-agent
+- name: "Template main agent config"
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - {src: templates/zabbix_agentd.conf, dest: /etc/zabbix/zabbix_agentd.conf}
+#  notify:
+#  - "zabbix_agent_restart"
 
+#- name: sleep for 2 seconds to allow agent initialization
+#  pause: 
+#    seconds: 2
+
+- name: "Copy agent add-on configs"
+  copy:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - {src: files/cron_discovery.conf, dest: /etc/zabbix/zabbix_agentd.d/cron_discovery.conf}
+  notify:
+    - "zabbix_agent_restart"
+...

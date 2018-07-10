@@ -1,25 +1,9 @@
-City-of-Bloomington.zabbix-agent
-=========
-Ansible role for configuring a Zabbix Agent.
+# City-of-Bloomington.zabbix-agent
 
-Requirements
-------------
+Install zabbix-agent via package, configure to connect to server.
 
-City-of-Bloomington.linux
+## Copying and License
 
-
-Example Playbook
-----------------
-
-```yml
-- hosts: zabbix-whatever
-  become: yes
-  roles:
-  - City-of-Bloomington.linux
-```
-
-Copying and License
--------
 This material is copyright 2016 City of Bloomington, Indiana
 It is open and licensed under the GNU General Public License (GPL) v3.0 whose full text may be found at:
 https://www.gnu.org/licenses/gpl.txt
