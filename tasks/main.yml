@@ -1,4 +1,11 @@
 ---
+- name: Install GPG (to allow apt_key module to work in 18.04)
+  apt: 
+    name: gpg
+    state: present
+    update_cache: yes
+  when: ansible_distribution_version |int >17
+
 - name: Add the public key for Zabbix's repo
   apt_key:
     url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
@@ -33,6 +40,11 @@
   with_items:
     - { key: "Server",       value: "{{ zabbix_server_hostname }}" }
     - { key: "ServerActive", value: "{{ zabbix_server_hostname }}" }
+    - { key: "HostnameItem", value: "system.hostname" }
+    - { key: "HostMetadataItem", value: "system.hostname" }
+    - { key: "Timeout", value: 30 }
+    - { key: "Include", value: "/etc/zabbix/zabbix_agentd.d/*.conf" }
+    - { key: "UnsafeUserParameters", value: 1}
   notify:
     - "zabbix_agent_restart"
 
