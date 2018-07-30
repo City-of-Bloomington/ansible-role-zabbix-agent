@@ -1,53 +1,53 @@
 ---
-  # rewrite using the following:
-  # docs.ansible.com/ansible/latest/apt_repository_module.html
-  # docs.ansible.com/ansible/latest/apt_key_module.html
-
 - name: Add the public key for Zabbix's repo
   apt_key:
     url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
     state: present
   when: ansible_distribution_version |int <18
-  
+
 - name: Add the repo to /etc/apt/sources.list.d
   apt_repository:
     repo: deb {{ zabbix_repo.url}}/{{ zabbix_repo.repo}} {{ ansible_distribution_release }} main
     state: present
     filename: 'zabbix'
-  when: ansible_distribution_version |int <18  
+  when: ansible_distribution_version |int <18
 
 - name: Install agent
-  apt: 
+  apt:
     name: zabbix-agent
     state: present
     update_cache: yes
 
-- name: Enable rules in UFW
+- name: "Open zabbix port in firewall"
   ufw:
-    rule: allow
-    port: 10050
-    src: 10.20.20.0/24
-    
+    rule: "allow"
+    port: "10050"
+    src:  "{{ zabbix_server_network }}"
 
-- name: "Template main agent config"
-  template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
+- name: "Update agent config"
+  ini_file:
+    path: "/etc/zabbix/zabbix_agentd.conf"
+    section: null
+    option: "{{ item.key   }}"
+    value:  "{{ item.value }}"
   with_items:
-    - {src: templates/zabbix_agentd.conf, dest: /etc/zabbix/zabbix_agentd.conf}
-#  notify:
-#  - "zabbix_agent_restart"
-
-#- name: sleep for 2 seconds to allow agent initialization
-#  pause: 
-#    seconds: 2
+    - { key: "Server",       value: "{{ zabbix_server_hostname }}" }
+    - { key: "ServerActive", value: "{{ zabbix_server_hostname }}" }
+  notify:
+    - "zabbix_agent_restart"
 
 - name: "Copy agent add-on configs"
   copy:
-    src: "{{item.src}}"
+    src:  "{{item.src}}"
     dest: "{{item.dest}}"
   with_items:
     - {src: files/cron_discovery.conf, dest: /etc/zabbix/zabbix_agentd.d/cron_discovery.conf}
   notify:
     - "zabbix_agent_restart"
+
+- name: "Start service"
+  service:
+    name:    "zabbix-agent"
+    enabled: "yes"
+    state:   "started"
 ...

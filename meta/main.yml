@@ -11,6 +11,7 @@ galaxy_info:
         - trusty
         - xenial
         - bionic
+
   role_name: zabbix-agent
   galaxy_tags:
     - ubuntu
