@@ -10,14 +10,12 @@
   apt_key:
     url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
     state: present
-  when: ansible_distribution_version |int <18
 
 - name: Add the repo to /etc/apt/sources.list.d
   apt_repository:
     repo: deb {{ zabbix_repo.url}}/{{ zabbix_repo.repo}} {{ ansible_distribution_release }} main
     state: present
     filename: 'zabbix'
-  when: ansible_distribution_version |int <18
 
 - name: Install agent
   apt:
