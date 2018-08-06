@@ -1,12 +1,8 @@
 ---
-zabbix_deb:
-  trusty: https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.5-1+trusty_all.deb
-  xenial: https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.5-1+xenial_all.deb
-
 zabbix_repo:
   url: https://repo.zabbix.com
   repo: zabbix/3.4/ubuntu
 
-zabbix_server_hostname: ""
-zabbix_server_network:  ""
+zabbix_server_hostname: "networkmonitor.bloomington.in.gov"
+zabbix_server_network:  "10.20.20.0/24"
 ...

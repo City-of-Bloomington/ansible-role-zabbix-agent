@@ -33,6 +33,7 @@
   ini_file:
     path: "/etc/zabbix/zabbix_agentd.conf"
     section: null
+    no_extra_spaces: yes
     option: "{{ item.key   }}"
     value:  "{{ item.value }}"
   with_items:
@@ -43,9 +44,19 @@
     - { key: "Timeout", value: 30 }
     - { key: "Include", value: "/etc/zabbix/zabbix_agentd.d/*.conf" }
     - { key: "UnsafeUserParameters", value: 1}
+    - { key: "LogFileSize", value: 5}
+
+- name: "Remove Hostname from config (to use auto-generated one)"
+  ini_file:
+    path: "/etc/zabbix/zabbix_agentd.conf"
+    section: null
+    no_extra_spaces: yes
+    option: "Hostname"
+    state: absent
+    allow_no_value: yes
   notify:
     - "zabbix_agent_restart"
-
+    
 - name: "Copy agent add-on configs"
   copy:
     src:  "{{item.src}}"
