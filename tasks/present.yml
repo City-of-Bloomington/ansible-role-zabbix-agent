@@ -1,0 +1,57 @@
+---
+- name: Install GPG (to allow apt_key module to work in 18.04+)
+  apt: 
+    name: gpg
+    state: present
+    update_cache: yes
+  when: ansible_distribution_version |int >17
+
+- name: Add the public key for Zabbix's repo
+  apt_key:
+    url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
+    state: present
+
+- name: Add the repo to /etc/apt/sources.list.d
+  apt_repository:
+    repo: deb {{ zabbix_repo.url}}/{{ zabbix_repo.repo}} {{ ansible_distribution_release }} main
+    state: present
+    filename: 'zabbix'
+
+- name: Install agent2
+  apt:
+    name: zabbix-agent2
+    state: present
+    update_cache: yes
+
+- name: "Open zabbix port in firewall"
+  ufw:
+    rule: "allow"
+    port: "10050"
+    from_ip:  "{{ zabbix_server_ip }}"
+
+- name: "Update agent config"
+  ini_file:
+    path: "/etc/zabbix/zabbix_agent2.conf"
+    section: null
+    no_extra_spaces: yes
+    option: "{{ item.key   }}"
+    value:  "{{ item.value }}"
+  with_items:
+    - { key: "Server",       value: "{{ zabbix_server_hostname }}" }
+    - { key: "ServerActive", value: "{{ zabbix_server_hostname }}" }
+    - { key: "HostnameItem", value: "system.hostname" }
+    - { key: "HostMetadataItem", value: "system.hostname" }
+    - { key: "Timeout", value: 30 }
+    #- { key: "Include", value: "/etc/zabbix/zabbix_agent2.d/*.conf" }
+    - { key: "UnsafeUserParameters", value: 1}
+    - { key: "LogFileSize", value: 5}
+
+- name: "Remove Hostname from config (to use auto-generated one)"
+  ini_file:
+    path: "/etc/zabbix/zabbix_agent2.conf"
+    section: null
+    no_extra_spaces: yes
+    option: "Hostname"
+    state: absent
+    allow_no_value: yes
+...

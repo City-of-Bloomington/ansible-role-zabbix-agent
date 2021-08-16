@@ -1,0 +1,8 @@
+---
+- name: "Copy mdadm add-on configs"
+  copy:
+    src:  "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - {src: files/addons/md/md.conf, dest: /etc/zabbix/zabbix_agent2.d/md.conf}
+...

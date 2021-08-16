@@ -11,6 +11,9 @@ galaxy_info:
         - trusty
         - xenial
         - bionic
+        - focal
+        - groovy
+        - hirsute
 
   role_name: zabbix-agent
   galaxy_tags:

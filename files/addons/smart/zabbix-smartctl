@@ -1,0 +1,4 @@
+Defaults:zabbix !requiretty
+zabbix ALL=(root) NOPASSWD: /usr/sbin/smartctl
+zabbix ALL=(root) NOPASSWD: /etc/zabbix/scripts/smartctl-storage-discovery.sh
+

@@ -1,0 +1,33 @@
+---
+- name: Remove the public key for Zabbix's repo
+  apt_key:
+    url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
+    state: absent
+
+- name: Remove the repo from /etc/apt/sources.list.d
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/zabbix.list
+    state: absent
+
+- name: Remove agent and agent2
+  apt:
+    name:
+      - zabbix-agent2
+      - zabbix-agent
+    state: absent
+    purge: yes
+    update_cache: yes
+
+- name: "Close zabbix port in firewall"
+  ufw:
+    rule: "allow"
+    port: "10050"
+    from_ip:  "{{ zabbix_server_ip }}"
+    delete: yes
+    state: reloaded
+
+- name: Remove zabbix directory
+  ansible.builtin.file:
+    path: /etc/zabbix
+    state: absent
+...

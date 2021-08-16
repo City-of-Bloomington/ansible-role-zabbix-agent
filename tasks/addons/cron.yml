@@ -1,0 +1,8 @@
+---
+- name: "Copy Cron job monitoring add-on configs"
+  copy:
+    src:  "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - {src: files/addons/cron/cron_discovery.conf, dest: /etc/zabbix/zabbix_agent2.d/cron_discovery.conf}
+...

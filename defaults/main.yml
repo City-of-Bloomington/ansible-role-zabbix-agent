@@ -1,8 +1,9 @@
 ---
 zabbix_repo:
   url: https://repo.zabbix.com
-  repo: zabbix/3.4/ubuntu
+  repo: zabbix/5.4/ubuntu
 
-zabbix_server_hostname: "networkmonitor.bloomington.in.gov"
-zabbix_server_network:  "10.20.20.0/24"
+zabbix_server_hostname: ""
+#zabbix_server_ip: "{{ lookup('dig', '{{zabbix_server_hostname}}.')}}" # requires dnspython to function
+zabbix_server_ip: ""
 ...
