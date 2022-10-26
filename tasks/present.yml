@@ -20,7 +20,7 @@
 - name: Install agent2
   apt:
     name: zabbix-agent2
-    state: present
+    state: latest
     update_cache: yes
 
 - name: "Open zabbix port in firewall"

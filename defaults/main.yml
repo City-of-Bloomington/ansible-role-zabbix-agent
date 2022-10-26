@@ -1,7 +1,7 @@
 ---
 zabbix_repo:
   url: https://repo.zabbix.com
-  repo: zabbix/5.4/ubuntu
+  repo: zabbix/6.3/ubuntu
 
 zabbix_server_hostname: ""
 #zabbix_server_ip: "{{ lookup('dig', '{{zabbix_server_hostname}}.')}}" # requires dnspython to function
