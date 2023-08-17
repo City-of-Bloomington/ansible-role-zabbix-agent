@@ -1,27 +1,22 @@
 ---
-- name: Install GPG (to allow apt_key module to work in 18.04+)
-  apt: 
-    name: gpg
-    state: present
-    update_cache: yes
-  when: ansible_distribution_version |int >17
+- name: 'Add Zabbix public key'
+  ansible.builtin.get_url:
+    url:  '{{ zabbix_repo.url }}/zabbix-official-repo.key'
+    dest: '/etc/apt/keyrings/zabbix.asc'
+    mode: '0644'
 
-- name: Add the public key for Zabbix's repo
-  apt_key:
-    url: "{{zabbix_repo.url}}/zabbix-official-repo.key"
-    state: present
+- name: 'Add Zabbix apt repository'
+  ansible.builtin.apt_repository:
+    filename: 'zabbix.list'
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/zabbix.asc] {{ zabbix_repo.url }}/{{ zabbix_repo.repo }} {{ ansible_distribution_release }} main"
+    state: 'present'
+    update_cache: 'yes'
 
-- name: Add the repo to /etc/apt/sources.list.d
-  apt_repository:
-    repo: deb {{ zabbix_repo.url}}/{{ zabbix_repo.repo}} {{ ansible_distribution_release }} main
-    state: present
-    filename: 'zabbix'
-
-- name: Install agent2
-  apt:
-    name: zabbix-agent2
-    state: latest
-    update_cache: yes
+- name: 'Install agent2'
+  ansible.builtin.apt:
+    name: 'zabbix-agent2'
+    state: 'latest'
+    update_cache: 'yes'
 
 - name: "Open zabbix port in firewall"
   ufw:
