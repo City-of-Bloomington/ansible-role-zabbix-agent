@@ -1,4 +1,10 @@
 ---
+- name: Create keyrings directory if it doesn't exist
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
 - name: 'Add Zabbix public key'
   ansible.builtin.get_url:
     url:  '{{ zabbix_repo.url }}/zabbix-official-repo.key'
