@@ -30,14 +30,17 @@
     port: "10050"
     from_ip:  "{{ zabbix_server_ip }}"
 
+
+# if this section throws mysterious errors, the behavior has changed recently (12/2023) and you may need to upgrade
+# https://stackoverflow.com/questions/77580363/ansible-throws-error-with-ini-file-module-if-section-is-null
 - name: "Update agent config"
   ini_file:
     path: "/etc/zabbix/zabbix_agent2.conf"
-    section: null
+    #section: null
     no_extra_spaces: yes
     option: "{{ item.key   }}"
     value:  "{{ item.value }}"
-  with_items:
+  loop:
     - { key: "Server",       value: "{{ zabbix_server_hostname }}" }
     - { key: "ServerActive", value: "{{ zabbix_server_hostname }}" }
     - { key: "HostnameItem", value: "system.hostname" }
