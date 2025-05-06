@@ -13,7 +13,7 @@
 
 - name: 'Add Zabbix apt repository'
   ansible.builtin.apt_repository:
-    filename: 'zabbix.list'
+    filename: 'zabbix'
     repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/zabbix.asc] {{ zabbix_repo.url }}/{{ zabbix_repo.repo }} {{ ansible_distribution_release }} main"
     state: 'present'
     update_cache: 'yes'
